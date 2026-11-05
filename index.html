@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1b">
+  <meta name="description" content="API LAB: entenda o que é uma API, consulte uma API de verdade e crie seu primeiro projeto no VS Code. Atividade de Desenvolvimento de Sistemas.">
+  <title>API LAB — Uma conversa entre sistemas</title>
+  <style>
+    :root { color-scheme:dark; --bg:#080d1b; --panel:#10192d; --panel2:#151f37; --ink:#f3f7ff; --muted:#9eacc6; --soft:#cbd6ec; --line:#253552; --mint:#75f4d2; --violet:#9b95ff; --blue:#69bffb; --gold:#ffd790; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; scroll-padding-top:100px; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.7; overflow-x:hidden; }
+    body::before { content:""; position:absolute; left:0; top:0; width:100%; height:760px; z-index:-1; background:radial-gradient(ellipse 55% 55% at 88% 26%,#293e7755,transparent 70%),radial-gradient(ellipse 55% 40% at 20% 15%,#51337944,transparent 73%); pointer-events:none; }
+    a { color:inherit; } button,input,textarea { font:inherit; } button { cursor:pointer; } button:disabled { opacity:.6; cursor:not-allowed; }
+    :focus-visible { outline:3px solid var(--gold); outline-offset:4px; }
+    .wrap { width:min(1160px, calc(100% - 48px)); margin-inline:auto; }
+    .topbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); background:#080d1bdc; border-bottom:1px solid #2636549a; }
+    .nav { min-height:75px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .brand { text-decoration:none; display:flex; align-items:center; gap:11px; font-weight:850; letter-spacing:.06em; font-size:17px; white-space:nowrap; }
+    .brand-mark { display:grid; place-items:center; width:35px; height:35px; background:linear-gradient(145deg,#76f5d0,#75b4ee); border-radius:11px; color:#081429; font-weight:950; }
+    .navlinks { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+    .navlinks a { font-size:13px; color:#c7d2e5; text-decoration:none; transition:color .2s; font-weight:650; }
+    .navlinks a:hover { color:var(--mint); }
+    .top-progress { height:3px; background:#17253d; }
+    .top-progress span { display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--mint),var(--violet)); transition:width .12s; }
+    .eyebrow { display:inline-flex; align-items:center; gap:9px; color:var(--mint); text-transform:uppercase; font-size:12px; font-weight:820; letter-spacing:.17em; }
+    .eyebrow::before { content:""; display:block; width:7px; height:7px; border-radius:50%; background:var(--mint); box-shadow:0 0 16px var(--mint); }
+    .hero { padding:98px 0 90px; display:grid; grid-template-columns:1.1fr .9fr; align-items:center; gap:65px; }
+    h1,h2,h3,p { margin-top:0; } h1,h2,h3 { line-height:1.14; letter-spacing:-.045em; }
+    h1 { font-size:clamp(48px,6.1vw,82px); font-weight:850; margin:22px 0; }
+    .gradient { background:linear-gradient(105deg,#99ffdc 5%,#9eb3ff 57%,#c8a8ff 92%); background-clip:text; -webkit-background-clip:text; color:transparent; }
+    .lead { color:var(--soft); font-size:clamp(17px,1.8vw,20px); max-width:560px; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin:28px 0 35px; }
+    .btn { display:inline-flex; justify-content:center; align-items:center; text-decoration:none; padding:13px 22px; border-radius:12px; border:1px solid #40506b; color:var(--ink); background:#1c2942; font-weight:800; transition:transform .2s, background .2s,box-shadow .2s; line-height:1.4; }
+    .btn:hover { transform:translateY(-2px); background:#263b5a; }
+    .btn.primary { border-color:#80ead0; background:var(--mint); color:#09202a; box-shadow:0 11px 34px #75f4d229; }
+    .btn.primary:hover { background:#abffe7; }
+    .btn.ghost { background:#14203b; }
+    .btn.small { font-size:13px; padding:9px 14px; }
+    .micro { color:#96a6c2; font-size:13px; display:flex; flex-wrap:wrap; gap:16px; font-weight:650; }
+    .micro span::before { content:"✓"; color:var(--mint); margin-right:7px; }
+    .hero-visual { position:relative; border:1px solid #3a4b75; border-radius:24px; background:linear-gradient(160deg,#182440ed,#0e172be8); box-shadow:0 30px 90px #0008, inset 0 1px #ffffff17; padding:24px; overflow:hidden; }
+    .hero-visual::before { content:""; position:absolute; width:270px; height:270px; border:1px solid #75f4d235; border-radius:50%; right:-110px; top:-120px; box-shadow:0 0 0 35px #75f4d208,0 0 0 70px #75f4d208; pointer-events:none; }
+    .window-header { display:flex; gap:7px; align-items:center; margin-bottom:30px; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#e8898e; }.dot:nth-child(2){background:#f3c377}.dot:nth-child(3){background:#8bd4b5}
+    .window-header span { margin-left:auto; font:12px ui-monospace,monospace; color:#8495b8; }
+    .signal-flow { display:grid; grid-template-columns:1fr 54px 1fr; align-items:center; gap:7px; }
+    .node { position:relative; min-height:135px; border:1px solid #344969; border-radius:16px; background:#0e1a31; text-align:center; padding:20px 12px; }
+    .node-symbol { display:block; color:var(--mint); font:800 27px ui-monospace,monospace; padding-bottom:5px; }
+    .node strong { display:block; font-size:15px; }
+    .node small { display:block; color:#a5b3cd; line-height:1.35; font-size:12px; margin-top:3px; }
+    .flow-arrow { text-align:center; color:var(--mint); font-size:24px; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100% {opacity:.5}50%{opacity:1;transform:translateX(2px)} }
+    .terminal { margin-top:20px; background:#070f1f; border:1px solid #2c3c5a; border-radius:12px; overflow:hidden; }
+    .terminal-label { padding:8px 14px; background:#16213a; color:#95a8cc; border-bottom:1px solid #2c3c5a; font:12px ui-monospace,monospace; }
+    .terminal pre { white-space:pre-wrap; word-break:break-word; padding:16px; margin:0; font:13px/1.8 ui-monospace,"Cascadia Code",Consolas,monospace; color:#b9d1f6; }
+    .key { color:#a995ff; }.val { color:#76f4d1; }
+    .section { padding:80px 0 34px; }
+    .section-head { max-width:750px; margin-bottom:33px; }
+    .section-head h2 { font-size:clamp(31px,4vw,49px); margin:13px 0 14px; }
+    .section-head p { color:#b4c1d9; font-size:17px; }
+    .columns-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .feature { padding:27px 26px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,#17213a,#101a2c); min-height:224px; }
+    .feature .index { display:inline-grid; place-items:center; width:40px; height:40px; border-radius:13px; background:#263a58; color:var(--mint); font:800 14px ui-monospace,monospace; }
+    .feature h3 { font-size:20px; letter-spacing:-.025em; margin:22px 0 10px; }
+    .feature p { color:var(--muted); font-size:15px; margin-bottom:0; }
+    .callout { margin-top:20px; padding:19px 22px; border:1px solid #416a73; border-radius:15px; background:linear-gradient(100deg,#112d38,#121d34); color:#d4f0ee; }
+    .callout strong { color:var(--mint); }
+    .flowboard { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:24px; }
+    .flowstep { border:1px solid #354865; border-radius:15px; background:#111e34; padding:18px 14px; text-align:center; }
+    .flowstep b { display:block; color:var(--mint); font-size:25px; margin-bottom:7px; }.flowstep strong { display:block; line-height:1.3; font-size:14px; }.flowstep small { font-size:12px; color:var(--muted); line-height:1.5; display:block; margin-top:8px; }
+    .glossary { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    .term { padding:9px 14px; background:#151f35; border-radius:999px; border:1px solid #2a3b59; color:#cdd8e9; font-size:13px; }
+    .term strong { color:var(--gold); }
+    .labgrid { display:grid; grid-template-columns:.96fr 1.04fr; gap:18px; align-items:stretch; }
+    .lab-panel { padding:28px; background:linear-gradient(160deg,#1a2743,#101a2f); border:1px solid #314766; border-radius:19px; }
+    .lab-panel h3 { font-size:22px; margin-bottom:8px; }.lab-panel > p { color:var(--muted); font-size:15px; }
+    .input-label { display:block; color:#c7d6ef; font-size:13px; font-weight:800; margin:25px 0 9px; }
+    .input-row { display:flex; gap:9px; }
+    .text-input { background:#080f20; border:1px solid #425676; min-width:0; color:white; padding:12px 14px; border-radius:11px; width:100%; }
+    .text-input::placeholder { color:#8799b6; }
+    .quick { display:flex; flex-wrap:wrap; gap:8px; margin:13px 0 0; align-items:center; }
+    .quick span { font-size:13px; color:var(--muted); margin-right:4px; }
+    .chip { border:1px solid #40526e; padding:5px 11px; border-radius:999px; color:#dce7f8; background:#172641; font-size:12px; font-weight:730; }
+    .chip:hover { background:#2a3b59; }
+    .response { margin-top:24px; background:#0b1528; border:1px solid #2f4562; border-radius:15px; min-height:172px; padding:18px; }
+    .response-label { text-transform:uppercase; font-size:11px; letter-spacing:.13em; color:var(--mint); font-weight:900; margin-bottom:11px; }
+    .response h4 { margin:0 0 7px; font-size:21px; line-height:1.25; }.response p { font-size:14px; color:#c0d0e7; margin-bottom:0; }
+    .muted-text { color:var(--muted); font-size:14px; }
+    .api-code { background:#060d1b; border:1px solid #2a3c58; border-radius:15px; overflow:hidden; }
+    .api-code-bar { display:flex; justify-content:space-between; gap:8px; padding:10px 14px; background:#131e34; border-bottom:1px solid #2b3b55; color:#b4c2dc; font:12px ui-monospace,monospace; }
+    .api-code pre { margin:0; padding:20px; color:#c4e1ff; white-space:pre-wrap; word-break:break-word; min-height:300px; font:13px/1.7 ui-monospace,"Cascadia Code",Consolas,monospace; }
+    .step-lines { display:grid; gap:8px; margin-top:18px; }
+    .step-line { display:flex; gap:11px; align-items:flex-start; padding:11px 13px; background:#111b30; border:1px solid #283a55; border-radius:11px; color:#acbbd3; font-size:13px; }
+    .step-line b { color:var(--mint); font:800 14px ui-monospace,monospace; }
+    .warning { font-size:13px; color:#b4c1d9; margin:12px 0 0; }
+    .stage { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:18px; }
+    .task-card { border:1px solid #30435e; border-radius:17px; padding:25px; background:#101c31; }
+    .task-card h3 { font-size:18px; margin:0 0 10px; }
+    .task-card p { color:#b6c4da; font-size:14px; margin:0; }
+    .step-num { display:inline-flex; background:#263953; color:var(--mint); border-radius:7px; font-size:11px; padding:4px 8px; margin-bottom:11px; font-weight:850; letter-spacing:.06em; }
+    .code-heading { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin:25px 0 12px; }
+    .code-heading h3 { font-size:20px; margin:0; }
+    .student-code { padding:22px; margin:0; max-height:460px; overflow:auto; background:#070e1f; border:1px solid #324868; border-radius:15px; font:12px/1.55 Consolas,"Cascadia Code",ui-monospace,monospace; color:#d6e5ff; tab-size:2; }
+    .note { font-size:14px; color:#bdc9de; margin:18px 0 0; }
+    .challenge { margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .challenge article { padding:20px; background:#17223a; border:1px solid #344969; border-radius:14px; }
+    .challenge strong { color:var(--mint); font-size:14px; }.challenge p { color:#b5c4db; font-size:14px; margin:8px 0 0; }
+    .research-shell { display:grid; grid-template-columns:.36fr .64fr; gap:25px; }
+    .research-side { background:linear-gradient(145deg,#1b2c4a,#132038); border:1px solid #3b557a; border-radius:17px; padding:25px; align-self:start; }
+    .research-side h3 { font-size:23px; margin-top:12px; }
+    .research-side p { color:#bfcee7; font-size:14px; }
+    .research-side .mini { display:inline-flex; border:1px solid #568a82; border-radius:8px; padding:6px 11px; color:var(--mint); font-size:12px; font-weight:850; }
+    .research-main { border:1px solid #314563; border-radius:17px; background:#111c31; padding:27px; }
+    .research-main h3 { font-size:20px; margin-bottom:9px; }.research-main > p { color:#aebed7; font-size:14px; }
+    .question { padding:21px 0; border-bottom:1px solid #30415a; }.question:last-of-type { border:0; }
+    .question label { display:block; font-weight:800; font-size:15px; line-height:1.4; margin-bottom:7px; }
+    .question small { display:block; color:#9eaec8; font-size:13px; margin-bottom:12px; }
+    .question textarea { width:100%; resize:vertical; min-height:75px; padding:12px; background:#080f20; color:#eef6ff; border:1px solid #405574; border-radius:10px; }
+    .research-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:16px; }.state { color:#a5bad3; font-size:13px; }
+    .takeaway { text-align:center; margin:72px auto 45px; max-width:800px; padding:44px 28px; border:1px solid #4d6384; border-radius:24px; background:radial-gradient(ellipse at top,#2f3e6c,#131c31 65%); }
+    .takeaway .star { font-size:30px; }.takeaway h2 { font-size:clamp(26px,4vw,42px); margin:15px 0; }.takeaway p { font-size:16px; color:#c6d5ec; max-width:600px; margin:0 auto; }
+    footer { border-top:1px solid var(--line); padding:28px 0 35px; }
+    .foot { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; color:#9cabc4; font-size:13px; }
+    .foot a { color:var(--mint); }
+    @media(max-width:970px) { .hero { grid-template-columns:1fr; gap:45px; padding:70px 0; } .hero-visual { max-width:590px; width:100%; } .navlinks { gap:12px; } .columns-3 { grid-template-columns:repeat(2,1fr); } .labgrid, .research-shell { grid-template-columns:1fr; } .flowboard { grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:610px) { .wrap { width:min(100% - 28px,1160px); }.nav { min-height:67px; }.navlinks { gap:9px; }.navlinks a { font-size:11px; }.navlinks a:nth-child(1),.navlinks a:nth-child(2) { display:none; } .brand { font-size:15px; }.hero { padding:56px 0 45px; }.hero-visual { padding:16px; }.section { padding-top:58px; }.columns-3,.stage,.challenge { grid-template-columns:1fr; }.flowboard { grid-template-columns:repeat(2,1fr); }.lab-panel,.research-main { padding:20px; } .input-row { flex-direction:column; }.hero-actions .btn { flex:1; }.terminal pre {font-size:11px;} }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#inicio" aria-label="API LAB, voltar ao início"><span class="brand-mark">{ }</span> API<span style="color:var(--mint)">LAB</span></a>
+      <nav class="navlinks" aria-label="Navegação da aula"><a href="#conceito">Conceito</a><a href="#funcionamento">Como funciona</a><a href="#laboratorio">Laboratório</a><a href="#pratica">VS Code</a><a href="#pesquisa">Pesquisa</a></nav>
+    </div><div class="top-progress"><span id="scrollProgress"></span></div>
+  </header>
+
+  <main>
+    <section class="wrap hero" id="inicio">
+      <div>
+        <div class="eyebrow">Desenvolvimento de Sistemas · Aula prática</div>
+        <h1>Um sistema.<br>Outro sistema.<br><span class="gradient">Uma conexão.</span></h1>
+        <p class="lead">Você já usou um aplicativo que mostra uma informação que vem de outro lugar. Hoje vai descobrir como isso acontece — e fazer essa comunicação funcionar com o seu próprio código.</p>
+        <div class="hero-actions"><a class="btn primary" href="#conceito">Começar a descobrir <span aria-hidden="true">&nbsp;↗</span></a><a class="btn ghost" href="#laboratorio">Testar uma API</a></div>
+        <div class="micro"><span>Sem instalação extra</span><span>Funciona no Windows</span><span>VS Code + navegador</span></div>
+      </div>
+      <div class="hero-visual" aria-label="Exemplo visual de uma página solicitando dados a uma API">
+        <div class="window-header"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>conexao_ativa.js</span></div>
+        <div class="signal-flow">
+          <div class="node"><span class="node-symbol">&lt;/&gt;</span><strong>Seu site</strong><small>faz uma pergunta</small></div>
+          <div class="flow-arrow" aria-hidden="true">⇄</div>
+          <div class="node"><span class="node-symbol">{ }</span><strong>API</strong><small>entrega os dados</small></div>
+        </div>
+        <div class="terminal"><div class="terminal-label">resposta.json <span style="float:right;color:var(--mint)">● conectando ideias</span></div><pre>{
+  <span class="key">"cidade"</span>: <span class="val">"Curitiba"</span>,
+  <span class="key">"estado"</span>: <span class="val">"Paraná"</span>,
+  <span class="key">"conexao"</span>: <span class="val">"funcionando"</span>
+}</pre></div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="conceito">
+      <div class="section-head"><div class="eyebrow">01 · O conceito</div><h2>O que é uma <span class="gradient">API?</span></h2><p>API significa <strong>Interface de Programação de Aplicações</strong>. É uma forma organizada de um programa solicitar recursos ou informações a outro programa, seguindo regras definidas.</p></div>
+      <div class="columns-3">
+        <article class="feature"><span class="index">01</span><h3>Imagine a situação</h3><p>Seu site precisa descobrir qual cidade corresponde a um CEP. Mas ele não tem uma base de endereços.</p></article>
+        <article class="feature"><span class="index">02</span><h3>Em vez de guardar tudo…</h3><p>Seu site consulta um serviço que já oferece essa informação. A API define como fazer o pedido.</p></article>
+        <article class="feature"><span class="index">03</span><h3>Os dados chegam</h3><p>O serviço responde com informações que seu código pode ler e apresentar na tela.</p></article>
+      </div>
+      <div class="callout"><strong>Ideia principal:</strong> a API não é a tela do aplicativo. Ela é uma <strong>interface de comunicação</strong> que permite ao seu programa acessar funcionalidades ou dados oferecidos por outro sistema.</div>
+    </section>
+
+    <section class="wrap section" id="funcionamento">
+      <div class="section-head"><div class="eyebrow">02 · Por trás da tela</div><h2>Como a informação <span class="gradient">viaja?</span></h2><p>Nesta atividade, vamos usar uma API da web. A sequência abaixo mostra o caminho de uma consulta simples.</p></div>
+      <div class="flowboard">
+        <div class="flowstep"><b>01</b><strong>Você digita</strong><small>um CEP no site</small></div>
+        <div class="flowstep"><b>02</b><strong>Seu código pede</strong><small>usando <strong>fetch()</strong></small></div>
+        <div class="flowstep"><b>03</b><strong>A internet leva</strong><small>o pedido ao serviço</small></div>
+        <div class="flowstep"><b>04</b><strong>A API responde</strong><small>com dados em JSON</small></div>
+        <div class="flowstep"><b>05</b><strong>O site mostra</strong><small>a cidade e o endereço</small></div>
+      </div>
+      <div class="glossary"><span class="term"><strong>HTTP:</strong> conjunto de regras para troca de mensagens na web</span><span class="term"><strong>GET:</strong> tipo de pedido usado para consultar dados</span><span class="term"><strong>JSON:</strong> formato de texto organizado para representar dados</span></div>
+      <p class="note">Por enquanto, basta reconhecer essas três palavras. Nosso foco é entender a <strong>API</strong> e fazer a primeira consulta. Outros tipos de requisição, como POST, ficam para uma próxima aula.</p>
+    </section>
+
+    <section class="wrap section" id="laboratorio">
+      <div class="section-head"><div class="eyebrow">03 · Experiência ao vivo</div><h2>Não precisa imaginar.<br><span class="gradient">Teste agora.</span></h2><p>Vamos conversar com a API pública <a href="https://viacep.com.br/" target="_blank" rel="noopener noreferrer" style="color:var(--mint)">ViaCEP</a>. Ela recebe um CEP e devolve informações de endereço. Você pode acompanhar o pedido e a resposta.</p></div>
+      <div class="labgrid">
+        <div class="lab-panel">
+          <h3>Seu primeiro pedido</h3><p>Escolha um CEP de exemplo e clique em consultar. É uma requisição real, feita pelo seu navegador.</p>
+          <label class="input-label" for="cepInput">CEP para consultar</label>
+          <form id="cepForm" class="input-row"><input class="text-input" id="cepInput" value="01001000" placeholder="8 dígitos, sem hífen" maxlength="9" inputmode="numeric" aria-describedby="cepHelp"><button class="btn primary" type="submit" id="consultarBtn">Consultar ↗</button></form>
+          <div class="quick" id="cepHelp"><span>Experimentar:</span><button type="button" class="chip" data-cep="01001000">01001-000</button><button type="button" class="chip" data-cep="80010000">80010-000</button><button type="button" class="chip" data-cep="99999999">CEP inexistente</button></div>
+          <div class="response" id="resultado" role="status" aria-live="polite"><div class="response-label">Aguardando consulta</div><h4>O que virá da API?</h4><p>Digite um CEP, clique em consultar e observe o resultado que será devolvido pelo serviço.</p></div>
+          <button type="button" class="btn small ghost" id="demoBtn" style="margin-top:14px">Ver resposta demonstrativa</button>
+          <p class="warning">A consulta real precisa de internet. A demonstração é um exemplo ilustrativo, não uma consulta ao serviço.</p>
+        </div>
+        <div class="lab-panel">
+          <div class="api-code"><div class="api-code-bar"><span>resposta da API · JSON</span><span id="apiStatus">● aguardando</span></div><pre id="jsonPreview" aria-label="Resposta da API em formato JSON">{
+  "mensagem": "Faça sua primeira consulta"
+}</pre></div>
+          <div class="step-lines"><div class="step-line"><b>→</b><div><strong>Pedido:</strong> <span id="urlTrace">ainda não enviado</span></div></div><div class="step-line"><b>←</b><div><strong>Resposta:</strong> <span id="responseTrace">ainda não recebida</span></div></div><div class="step-line"><b>{ }</b><div><strong>Leitura:</strong> o JavaScript transforma o JSON recebido em dados que conseguimos utilizar.</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="pratica">
+      <div class="section-head"><div class="eyebrow">04 · Mãos ao código</div><h2>Agora é você<br><span class="gradient">quem programa.</span></h2><p>Vamos criar, no Windows, um arquivo HTML que consulta a API e mostra o resultado. Não precisa instalar Flask, Python ou extensões.</p></div>
+      <div class="stage">
+        <article class="task-card"><span class="step-num">PASSO 01</span><h3>Abra o VS Code</h3><p>Crie uma pasta chamada <code>meu-primeiro-api</code> no computador e abra essa pasta no VS Code pelo menu <strong>Arquivo → Abrir Pasta</strong>.</p></article>
+        <article class="task-card"><span class="step-num">PASSO 02</span><h3>Crie um arquivo</h3><p>Na pasta, crie um arquivo chamado <code>aluno.html</code>. Esse nome é importante: a extensão <code>.html</code> indica uma página web.</p></article>
+        <article class="task-card"><span class="step-num">PASSO 03</span><h3>Copie e cole o código</h3><p>Use o botão <strong>Copiar código</strong> abaixo. Cole no arquivo <code>aluno.html</code> e salve com <strong>Ctrl + S</strong>.</p></article>
+        <article class="task-card"><span class="step-num">PASSO 04</span><h3>Execute no navegador</h3><p>Abra a pasta pelo Explorador de Arquivos do Windows e dê <strong>dois cliques</strong> em <code>aluno.html</code>. Faça sua primeira consulta.</p></article>
+      </div>
+      <div class="code-heading"><h3>Código completo do projeto</h3><button class="btn primary small" id="copyCode" type="button">Copiar código</button></div>
+      <pre class="student-code" id="studentCode"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;pt-BR&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Meu primeiro projeto com API&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: Arial, sans-serif; background: #0b1023; color: #f5f7ff; margin: 0; min-height: 100vh; display: grid; place-items: center; }
+    main { background: #18213d; border: 1px solid #344269; border-radius: 20px; padding: 32px; width: min(440px, 85vw); box-shadow: 0 20px 70px #0005; }
+    h1 { margin-top: 0; }
+    p { color: #c5d1e9; line-height: 1.6; }
+    label { display: block; margin: 22px 0 8px; }
+    input { width: 100%; box-sizing: border-box; padding: 13px; border: 1px solid #61739f; border-radius: 10px; font-size: 18px; }
+    button { background: #77f2d1; color: #091b27; border: none; padding: 13px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 14px; width: 100%; }
+    button:hover { background: #a4ffe5; }
+    #resultado { margin-top: 20px; background: #0f1730; border-radius: 12px; padding: 18px; line-height: 1.7; min-height: 55px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;h1&gt;🌐 Meu primeiro projeto com API&lt;/h1&gt;
+    &lt;p&gt;Digite um CEP e descubra como uma página conversa com outro sistema para buscar informações.&lt;/p&gt;
+
+    &lt;label for=&quot;cep&quot;&gt;CEP (8 números)&lt;/label&gt;
+    &lt;input id=&quot;cep&quot; placeholder=&quot;Ex.: 01001000&quot; maxlength=&quot;9&quot; value=&quot;01001000&quot; inputmode=&quot;numeric&quot;&gt;
+    &lt;button id=&quot;buscar&quot;&gt;Consultar API&lt;/button&gt;
+
+    &lt;div id=&quot;resultado&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;O endereço aparecerá aqui.&lt;/div&gt;
+  &lt;/main&gt;
+
+  &lt;script&gt;
+    const campo = document.getElementById(&#x27;cep&#x27;);
+    const botao = document.getElementById(&#x27;buscar&#x27;);
+    const resultado = document.getElementById(&#x27;resultado&#x27;);
+
+    async function consultarCEP() {
+      const cep = campo.value.replace(/\D/g, &#x27;&#x27;);
+      if (cep.length !== 8) {
+        resultado.textContent = &#x27;Digite um CEP com exatamente 8 números.&#x27;;
+        return;
+      }
+
+      resultado.textContent = &#x27;Consultando a API...&#x27;;
+      botao.disabled = true;
+
+      try {
+        // 1. Envia um pedido de informação à API
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!resposta.ok) throw new Error(&#x27;Falha na consulta.&#x27;);
+
+        // 2. Converte a resposta JSON em um objeto JavaScript
+        const dados = await resposta.json();
+        if (dados.erro) {
+          resultado.textContent = &#x27;CEP não encontrado.&#x27;;
+          return;
+        }
+
+        // 3. Mostra na tela os dados recebidos da API
+        resultado.textContent = `${dados.logradouro || &#x27;Logradouro não informado&#x27;} — ${dados.bairro || &#x27;Bairro não informado&#x27;}, ${dados.localidade}/${dados.uf}`;
+      } catch (erro) {
+        resultado.textContent = &#x27;Não foi possível consultar. Confira sua internet e tente novamente.&#x27;;
+      } finally {
+        botao.disabled = false;
+      }
+    }
+
+    botao.addEventListener(&#x27;click&#x27;, consultarCEP);
+    campo.addEventListener(&#x27;keydown&#x27;, (evento) =&gt; {
+      if (evento.key === &#x27;Enter&#x27;) consultarCEP();
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+      <p class="note"><strong>Professor e alunos:</strong> o mesmo arquivo <code>aluno.html</code> também acompanha este material, caso prefiram abri-lo diretamente no VS Code. O JavaScript está dentro do próprio HTML, para facilitar o primeiro contato.</p>
+      <div class="callout"><strong>O que o código faz?</strong> <code>fetch()</code> pede dados à API; <code>resposta.json()</code> lê o JSON; e <code>resultado.textContent</code> apresenta a informação na página. Essas são as três partes que você deve localizar no código.</div>
+      <div class="challenge">
+        <article><strong>DESAFIO A · Testar</strong><p>Consulte o CEP <code>01001000</code> e, depois, experimente outro CEP válido.</p></article>
+        <article><strong>DESAFIO B · Personalizar</strong><p>Altere no CSS a cor do botão e, no HTML, o título da página. Salve e atualize o navegador.</p></article>
+        <article><strong>DESAFIO C · Investigar</strong><p>Encontre no código onde o nome da cidade é exibido. Descubra como incluir o campo <code>dados.cep</code> na resposta.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap section" id="pesquisa">
+      <div class="section-head"><div class="eyebrow">05 · Pesquisa guiada</div><h2>Não basta copiar.<br><span class="gradient">É preciso compreender.</span></h2><p>Pesquise, experimente e escreva suas respostas com suas palavras. Esta etapa transforma o teste em conhecimento.</p></div>
+      <div class="research-shell">
+        <aside class="research-side"><span class="mini">ATIVIDADE DE PESQUISA</span><h3>Missão: investigar uma API</h3><p>Use as explicações desta página, o resultado das consultas e a documentação oficial como fontes.</p><p>Ao terminar, clique em <strong>Baixar respostas</strong> para gerar um arquivo <code>.txt</code> e enviar ao professor pelo meio combinado em sala.</p><p><a href="https://viacep.com.br/" target="_blank" rel="noopener noreferrer" style="color:var(--mint)">Abrir documentação do ViaCEP ↗</a></p><p style="border-top:1px solid #435778;padding-top:18px">As respostas são mantidas temporariamente neste navegador. Evite digitar dados pessoais ou sigilosos.</p></aside>
+        <div class="research-main">
+          <h3>Seu registro de aprendizagem</h3><p>Responda às cinco perguntas. O botão de download funciona sem cadastro.</p>
+          <div class="question"><label for="q1">1. O que é uma API? Explique com um exemplo do cotidiano.</label><small>Não copie apenas a sigla. Descreva para que ela serve.</small><textarea id="q1" placeholder="Escreva aqui a sua resposta..."></textarea></div>
+          <div class="question"><label for="q2">2. O que você enviou para a API ViaCEP e o que ela devolveu?</label><small>Descreva a informação de entrada e os dados de saída.</small><textarea id="q2" placeholder="Escreva aqui a sua resposta..."></textarea></div>
+          <div class="question"><label for="q3">3. O que é JSON? Cite dois campos que apareceram na resposta.</label><small>Observe o painel JSON do laboratório.</small><textarea id="q3" placeholder="Escreva aqui a sua resposta..."></textarea></div>
+          <div class="question"><label for="q4">4. No código, qual é o papel de fetch()?</label><small>Localize essa função no arquivo e explique o que ela solicita.</small><textarea id="q4" placeholder="Escreva aqui a sua resposta..."></textarea></div>
+          <div class="question"><label for="q5">5. Imagine um aplicativo escolar. Que informação seria útil obter por meio de uma API?</label><small>Crie uma proposta própria, indicando que dados o aplicativo pediria.</small><textarea id="q5" placeholder="Escreva aqui a sua resposta..."></textarea></div>
+          <div class="research-actions"><button class="btn primary" type="button" id="downloadAnswers">Baixar minhas respostas .txt ↓</button><span class="state" id="saveState" role="status" aria-live="polite">Pronto para começar.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap"><div class="takeaway"><div class="star" aria-hidden="true">✦</div><h2>Quando você entende uma API, <span class="gradient">a internet fica menos misteriosa.</span></h2><p>O que parecia mágica passa a ser comunicação: um programa solicita, outro responde, e você decide o que fazer com a informação.</p></div></div>
+  </main>
+  <footer><div class="wrap foot"><span><strong style="color:#e3f0ff">API LAB</strong> · Material didático para Desenvolvimento de Sistemas</span><span>Construído para aprender, testar, pesquisar e criar. · <a href="#inicio">Voltar ao início ↑</a></span></div></footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const cepInput = $('cepInput');
+    const responseBox = $('resultado');
+    const apiStatus = $('apiStatus');
+    const preview = $('jsonPreview');
+    const traceUrl = $('urlTrace');
+    const traceResponse = $('responseTrace');
+    const btn = $('consultarBtn');
+    const example = { cep:'01001-000', logradouro:'Praça da Sé', complemento:'lado ímpar', bairro:'Sé', localidade:'São Paulo', uf:'SP', ibge:'3550308', ddd:'11' };
+
+    function showResult(data, simulated=false) {
+      preview.textContent = JSON.stringify(data, null, 2);
+      apiStatus.textContent = simulated ? '◌ demonstração' : '● resposta recebida';
+      if (data.erro) {
+        responseBox.innerHTML = '<div class="response-label">CEP não encontrado</div><h4>Nenhum endereço localizado</h4><p>A API respondeu, mas não encontrou dados para esse CEP.</p>';
+        traceResponse.textContent = simulated ? 'dados ilustrativos' : 'JSON com erro: true';
+        return;
+      }
+      const heading = document.createElement('h4');
+      heading.textContent = data.logradouro || 'Logradouro não informado';
+      const body = document.createElement('p');
+      body.textContent = `${data.bairro || 'Bairro não informado'} · ${data.localidade || 'Cidade não informada'} / ${data.uf || 'UF não informada'} · CEP: ${data.cep || 'não informado'}`;
+      responseBox.innerHTML = `<div class="response-label">${simulated ? 'Exemplo ilustrativo · não é consulta real' : 'Consulta realizada com sucesso'}</div>`;
+      responseBox.append(heading,body);
+      traceResponse.textContent = simulated ? 'exemplo de JSON já preenchido' : 'JSON com os dados do endereço';
+    }
+
+    $('cepForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const cep = cepInput.value.replace(/\D/g, '');
+      if (cep.length !== 8) {
+        responseBox.innerHTML = '<div class="response-label">Confira o CEP</div><h4>Digite exatamente 8 números.</h4><p>Exemplo: 01001000.</p>';
+        apiStatus.textContent = '● CEP inválido';
+        return;
+      }
+      const url = `https://viacep.com.br/ws/${cep}/json/`;
+      traceUrl.textContent = `GET ${url}`;
+      traceResponse.textContent = 'aguardando resposta...';
+      preview.textContent = '// Aguardando os dados da API...';
+      responseBox.innerHTML = '<div class="response-label">Conectando</div><h4>Consultando o serviço…</h4><p>Seu navegador enviou um pedido à API ViaCEP.</p>';
+      apiStatus.textContent = '◌ consultando';
+      btn.disabled = true;
+      try {
+        const resposta = await fetch(url);
+        if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+        const dados = await resposta.json();
+        showResult(dados);
+      } catch (erro) {
+        apiStatus.textContent = '● falha na conexão';
+        preview.textContent = '// Não foi possível receber um JSON agora.\n// Verifique a internet ou teste a demonstração.';
+        responseBox.innerHTML = '<div class="response-label">Erro de conexão</div><h4>A API não respondeu</h4><p>Verifique a conexão com a internet. Se a rede da escola bloquear o serviço, use a demonstração para estudar o formato da resposta.</p>';
+        traceResponse.textContent = `não foi possível consultar (${erro.message})`;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    document.querySelectorAll('[data-cep]').forEach((b) => b.addEventListener('click', () => { cepInput.value=b.dataset.cep; $('cepForm').requestSubmit(); }));
+    $('demoBtn').addEventListener('click', () => { traceUrl.textContent='GET https://viacep.com.br/ws/01001000/json/ (exemplo apenas)'; showResult(example,true); });
+
+    $('copyCode').addEventListener('click', async () => {
+      const code = $('studentCode').textContent;
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Área de transferência indisponível');
+        await navigator.clipboard.writeText(code);
+        $('copyCode').textContent = '✓ Código copiado!';
+      } catch (_) {
+        const area = document.createElement('textarea');
+        area.value=code; area.style.position='fixed'; area.style.opacity='0'; document.body.appendChild(area); area.select();
+        const ok = document.execCommand('copy'); area.remove();
+        $('copyCode').textContent = ok ? '✓ Código copiado!' : 'Selecione o código e use Ctrl+C';
+      }
+    });
+
+    const qs = [
+      'O que é uma API? Explique com um exemplo do cotidiano.',
+      'O que você enviou para a API ViaCEP e o que ela devolveu?',
+      'O que é JSON? Cite dois campos que apareceram na resposta.',
+      'No código, qual é o papel de fetch()?',
+      'Imagine um aplicativo escolar. Que informação seria útil obter por meio de uma API?'
+    ];
+    // Guardamos as respostas apenas no navegador do aluno; não há envio a um servidor.
+    for (let n=1; n<=5; n++) {
+      const area=$(`q${n}`);
+      try { area.value=localStorage.getItem(`apilab_resposta_${n}`)||''; } catch (_) {}
+      area.addEventListener('input', () => {
+        try { localStorage.setItem(`apilab_resposta_${n}`,area.value); $('saveState').textContent='Respostas salvas neste navegador.'; }
+        catch (_) { $('saveState').textContent='Use Baixar respostas para guardar seu trabalho.'; }
+      });
+    }
+    $('downloadAnswers').addEventListener('click', () => {
+      const linhas=['API LAB — ATIVIDADE DE PESQUISA','Desenvolvimento de Sistemas','',...qs.flatMap((q,i)=>[`${i+1}. ${q}`,$(`q${i+1}`).value.trim()||'(não respondida)',''])];
+      const arquivo=new Blob(['\ufeff'+linhas.join('\r\n')],{type:'text/plain;charset=utf-8'});
+      const url=URL.createObjectURL(arquivo);
+      const link=document.createElement('a'); link.href=url; link.download='atividade-pesquisa-api.txt'; document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+      $('saveState').textContent='Arquivo de respostas preparado para download.';
+    });
+    function updateScroll() {
+      const max=document.documentElement.scrollHeight-window.innerHeight;
+      $('scrollProgress').style.width= max>0 ? `${(window.scrollY/max)*100}%` : '0%';
+    }
+    window.addEventListener('scroll',updateScroll,{passive:true}); updateScroll();
+  </script>
+</body>
+</html>

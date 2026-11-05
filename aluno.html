@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meu primeiro projeto com API</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0b1023; color: #f5f7ff; margin: 0; min-height: 100vh; display: grid; place-items: center; }
+    main { background: #18213d; border: 1px solid #344269; border-radius: 20px; padding: 32px; width: min(440px, 85vw); box-shadow: 0 20px 70px #0005; }
+    h1 { margin-top: 0; }
+    p { color: #c5d1e9; line-height: 1.6; }
+    label { display: block; margin: 22px 0 8px; }
+    input { width: 100%; box-sizing: border-box; padding: 13px; border: 1px solid #61739f; border-radius: 10px; font-size: 18px; }
+    button { background: #77f2d1; color: #091b27; border: none; padding: 13px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 14px; width: 100%; }
+    button:hover { background: #a4ffe5; }
+    #resultado { margin-top: 20px; background: #0f1730; border-radius: 12px; padding: 18px; line-height: 1.7; min-height: 55px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🌐 Meu primeiro projeto com API</h1>
+    <p>Digite um CEP e descubra como uma página conversa com outro sistema para buscar informações.</p>
+
+    <label for="cep">CEP (8 números)</label>
+    <input id="cep" placeholder="Ex.: 01001000" maxlength="9" value="01001000" inputmode="numeric">
+    <button id="buscar">Consultar API</button>
+
+    <div id="resultado" role="status" aria-live="polite">O endereço aparecerá aqui.</div>
+  </main>
+
+  <script>
+    const campo = document.getElementById('cep');
+    const botao = document.getElementById('buscar');
+    const resultado = document.getElementById('resultado');
+
+    async function consultarCEP() {
+      const cep = campo.value.replace(/\D/g, '');
+      if (cep.length !== 8) {
+        resultado.textContent = 'Digite um CEP com exatamente 8 números.';
+        return;
+      }
+
+      resultado.textContent = 'Consultando a API...';
+      botao.disabled = true;
+
+      try {
+        // 1. Envia um pedido de informação à API
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!resposta.ok) throw new Error('Falha na consulta.');
+
+        // 2. Converte a resposta JSON em um objeto JavaScript
+        const dados = await resposta.json();
+        if (dados.erro) {
+          resultado.textContent = 'CEP não encontrado.';
+          return;
+        }
+
+        // 3. Mostra na tela os dados recebidos da API
+        resultado.textContent = `${dados.logradouro || 'Logradouro não informado'} — ${dados.bairro || 'Bairro não informado'}, ${dados.localidade}/${dados.uf}`;
+      } catch (erro) {
+        resultado.textContent = 'Não foi possível consultar. Confira sua internet e tente novamente.';
+      } finally {
+        botao.disabled = false;
+      }
+    }
+
+    botao.addEventListener('click', consultarCEP);
+    campo.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Enter') consultarCEP();
+    });
+  </script>
+</body>
+</html>
